@@ -1,77 +1,80 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/auth-context'
 import { Eye, EyeOff, Calculator, UserPlus, LogIn } from 'lucide-react'
-
-const loginSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  password: z.string().min(1, 'Senha é obrigatória'),
-})
-
-const registerSchema = z.object({
-  name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(4, 'Senha deve ter pelo menos 4 caracteres'),
-  confirmPassword: z.string().min(1, 'Confirmação de senha é obrigatória'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Senhas não coincidem",
-  path: ["confirmPassword"],
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
-type RegisterFormData = z.infer<typeof registerSchema>
 
 export function LoginForm() {
   const { login, register } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isRegisterMode, setIsRegisterMode] = useState(false)
-
-  const loginForm = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      name: '',
-      password: '',
-    },
+  
+  // Estados para os campos do formulário
+  const [loginData, setLoginData] = useState({
+    name: '',
+    password: ''
+  })
+  
+  const [registerData, setRegisterData] = useState({
+    name: '',
+    password: '',
+    confirmPassword: ''
   })
 
-  const registerForm = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
-  })
-
-  const onLogin = (data: LoginFormData) => {
-    const success = login(data.name, data.password)
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    if (!loginData.name || !loginData.password) {
+      setError('Todos os campos são obrigatórios')
+      return
+    }
+    
+    const success = login(loginData.name, loginData.password)
     if (!success) {
       setError('Nome de usuário ou senha incorretos')
     }
   }
 
-  const onRegister = (data: RegisterFormData) => {
-    const success = register(data.name, data.email, data.password)
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    if (!registerData.name || !registerData.password || !registerData.confirmPassword) {
+      setError('Todos os campos são obrigatórios')
+      return
+    }
+    
+    if (registerData.name.length < 3) {
+      setError('Nome deve ter pelo menos 3 caracteres')
+      return
+    }
+    
+    if (registerData.password.length < 4) {
+      setError('Senha deve ter pelo menos 4 caracteres')
+      return
+    }
+    
+    if (registerData.password !== registerData.confirmPassword) {
+      setError('Senhas não coincidem')
+      return
+    }
+    
+    const success = register(registerData.name, `${registerData.name}@local.com`, registerData.password)
     if (!success) {
-      setError('Usuário ou email já existe')
+      setError('Usuário já existe')
     }
   }
 
   const toggleMode = () => {
     setIsRegisterMode(!isRegisterMode)
     setError('')
-    loginForm.reset()
-    registerForm.reset()
+    setLoginData({ name: '', password: '' })
+    setRegisterData({ name: '', password: '', confirmPassword: '' })
   }
 
   return (
@@ -93,166 +96,137 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           {!isRegisterMode ? (
-            <Form {...loginForm}>
-              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-                <FormField
-                  control={loginForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome de Usuário</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite seu nome de usuário" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="login-name" className="text-sm font-medium">
+                  Nome de Usuário
+                </label>
+                <Input
+                  id="login-name"
+                  type="text"
+                  placeholder="Digite seu nome de usuário"
+                  value={loginData.name}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full"
                 />
+              </div>
 
-                <FormField
-                  control={loginForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Digite sua senha"
-                            {...field}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="space-y-2">
+                <label htmlFor="login-password" className="text-sm font-medium">
+                  Senha
+                </label>
+                <div className="relative">
+                  <Input
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Digite sua senha"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
 
-                {error && (
-                  <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
-                    {error}
-                  </div>
-                )}
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                  {error}
+                </div>
+              )}
 
-                <Button type="submit" className="w-full">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Entrar
-                </Button>
-              </form>
-            </Form>
+              <Button type="submit" className="w-full">
+                <LogIn className="h-4 w-4 mr-2" />
+                Entrar
+              </Button>
+            </form>
           ) : (
-            <Form {...registerForm}>
-              <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                <FormField
-                  control={registerForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome de Usuário</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Escolha um nome de usuário" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="register-name" className="text-sm font-medium">
+                  Nome de Usuário
+                </label>
+                <Input
+                  id="register-name"
+                  type="text"
+                  placeholder="Digite seu nome de usuário"
+                  value={registerData.name}
+                  onChange={(e) => setRegisterData(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full"
                 />
+              </div>
 
-                <FormField
-                  control={registerForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Digite seu email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+              <div className="space-y-2">
+                <label htmlFor="register-password" className="text-sm font-medium">
+                  Senha
+                </label>
+                <div className="relative">
+                  <Input
+                    id="register-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Digite sua senha"
+                    value={registerData.password}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="register-confirm" className="text-sm font-medium">
+                  Confirmar Senha
+                </label>
+                <Input
+                  id="register-confirm"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Confirme sua senha"
+                  value={registerData.confirmPassword}
+                  onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  className="w-full"
                 />
+              </div>
 
-                <FormField
-                  control={registerForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Crie uma senha"
-                            {...field}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                  {error}
+                </div>
+              )}
 
-                <FormField
-                  control={registerForm.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirmar Senha</FormLabel>
-                      <FormControl>
-                        <Input
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="Confirme sua senha"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {error && (
-                  <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
-                    {error}
-                  </div>
-                )}
-
-                <Button type="submit" className="w-full">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Criar Conta
-                </Button>
-              </form>
-            </Form>
+              <Button type="submit" className="w-full">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Criar Conta
+              </Button>
+            </form>
           )}
 
           <div className="mt-6 text-center">
             <Button
-              variant="ghost"
+              type="button"
+              variant="link"
               onClick={toggleMode}
               className="text-sm"
             >
@@ -262,18 +236,6 @@ export function LoginForm() {
               }
             </Button>
           </div>
-
-          {!isRegisterMode && (
-            <div className="mt-4 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground text-center mb-2">
-                Credenciais de teste:
-              </p>
-              <div className="text-sm font-mono text-center space-y-1">
-                <div>Usuário: <span className="font-semibold">admin</span></div>
-                <div>Senha: <span className="font-semibold">admin</span></div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

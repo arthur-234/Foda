@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/auth-context'
 import { 
   Calculator, 
@@ -13,23 +14,31 @@ import {
   LogOut,
   User,
   Menu,
-  X
+  X,
+  CreditCard,
+  BarChart3,
+  Building2,
+  Settings,
+  PieChart,
+  Wallet
 } from 'lucide-react'
 
 interface SidebarProps {
-  activeCalculator: string
-  onCalculatorChange: (calculator: string) => void
+  activeSection: string
+  onSectionChange: (section: string) => void
 }
 
-export function Sidebar({ activeCalculator, onCalculatorChange }: SidebarProps) {
+export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
   const { user, logout } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  const calculators = [
-    { id: 'investment', name: 'Investimentos', icon: TrendingUp },
-    { id: 'compound', name: 'Juros Compostos', icon: PiggyBank },
-    { id: 'loan', name: 'Financiamentos', icon: DollarSign },
-    { id: 'retirement', name: 'Aposentadoria', icon: Calculator },
+  const menuItems = [
+    { id: 'dashboard', name: 'Dashboard', icon: Home },
+    { id: 'calculators', name: 'Calculadoras', icon: Calculator },
+    { id: 'expenses', name: 'Meus Gastos', icon: CreditCard },
+    { id: 'investments', name: 'Meus Investimentos', icon: TrendingUp },
+    { id: 'profits', name: 'Meus Lucros', icon: DollarSign },
+    { id: 'reports', name: 'Relatórios', icon: BarChart3 },
   ]
 
   return (
@@ -39,9 +48,14 @@ export function Sidebar({ activeCalculator, onCalculatorChange }: SidebarProps) 
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <Calculator className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-lg">FinanceCalc</span>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Building2 className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg">FinanceCalc</h1>
+              <p className="text-xs text-muted-foreground">Gestão Financeira</p>
+            </div>
           </div>
         )}
         <Button
@@ -55,54 +69,68 @@ export function Sidebar({ activeCalculator, onCalculatorChange }: SidebarProps) 
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 p-2">
-        <nav className="space-y-1">
-          {calculators.map((calc) => {
-            const Icon = calc.icon
+      <div className="flex-1 p-4">
+        <nav className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon
+            const isActive = activeSection === item.id
             return (
               <Button
-                key={calc.id}
-                variant={activeCalculator === calc.id ? 'default' : 'ghost'}
-                className={`w-full justify-start gap-3 ${isCollapsed ? 'px-2' : 'px-3'}`}
-                onClick={() => onCalculatorChange(calc.id)}
+                key={item.id}
+                variant={isActive ? 'default' : 'ghost'}
+                className={`w-full justify-start h-10 ${isCollapsed ? 'px-2' : 'px-3'} ${
+                  isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
+                }`}
+                onClick={() => onSectionChange(item.id)}
               >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>{calc.name}</span>}
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isCollapsed ? '' : 'mr-3'}`} />
+                {!isCollapsed && <span>{item.name}</span>}
               </Button>
             )
           })}
         </nav>
       </div>
 
-      {/* User Section */}
+      {/* User Profile */}
       <div className="p-4 border-t border-border">
-        <div className="space-y-2">
-          {/* User Info */}
-          <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="h-4 w-4 text-primary" />
+        <div className="flex items-center space-x-3 mb-4">
+          <Avatar>
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {user?.name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{user?.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
-            {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-              </div>
-            )}
-          </div>
+          )}
+        </div>
 
-          {/* Controls */}
+        {/* Controls */}
+        <div className="space-y-2">
           <div className={`flex gap-2 ${isCollapsed ? 'flex-col' : ''}`}>
             <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"
-              onClick={logout}
+              onClick={() => onSectionChange('settings')}
               className={`${isCollapsed ? 'w-full px-2' : 'flex-1'}`}
             >
-              <LogOut className="h-4 w-4" />
-              {!isCollapsed && <span className="ml-2">Sair</span>}
+              <Settings className="h-4 w-4" />
+              {!isCollapsed && <span className="ml-2">Config</span>}
             </Button>
           </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={logout}
+            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            <LogOut className="h-4 w-4" />
+            {!isCollapsed && <span className="ml-2">Sair</span>}
+          </Button>
         </div>
       </div>
     </div>

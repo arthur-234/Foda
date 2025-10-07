@@ -230,7 +230,7 @@ export function InvestmentCalculator() {
                   <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <Target className="h-4 w-4" />
                     <span>
-                      Em {watchedValues.months} meses você terá{' '}
+                      Em {months} meses você terá{' '}
                       <strong className="text-green-600 dark:text-green-400 font-mono">
                         {formatCurrency(result.finalAmount)}
                       </strong>
