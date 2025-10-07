@@ -14,6 +14,7 @@ import { ExpenseTracker } from '@/components/expenses/expense-tracker'
 import { InvestmentPortfolio } from '@/components/investments/investment-portfolio'
 import { ProfitTracker } from '@/components/profits/profit-tracker'
 import { FinancialReports } from '@/components/reports/financial-reports'
+import { NotesOrganizer } from '@/components/notes/notes-organizer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { clearAllData } from '@/lib/clear-data'
@@ -26,7 +27,8 @@ import {
   BarChart3,
   Plus,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  FileText
 } from 'lucide-react'
 
 export default function Home() {
@@ -132,7 +134,7 @@ export default function Home() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Button 
           variant="outline" 
           className="h-20 flex-col"
@@ -164,6 +166,14 @@ export default function Home() {
         >
           <BarChart3 className="h-6 w-6 mb-2" />
           Ver Relatórios
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-20 flex-col"
+          onClick={() => setActiveSection('notes')}
+        >
+          <FileText className="h-6 w-6 mb-2" />
+          Notas & Tarefas
         </Button>
       </div>
     </div>
@@ -275,6 +285,8 @@ export default function Home() {
     </div>
   )
 
+  const renderNotes = () => <NotesOrganizer />
+
   const renderCalculator = () => {
     switch (activeSection) {
       case 'investment':
@@ -308,6 +320,8 @@ export default function Home() {
         return renderProfits()
       case 'reports':
         return renderReports()
+      case 'notes':
+        return renderNotes()
       case 'investment':
       case 'compound':
       case 'loan':

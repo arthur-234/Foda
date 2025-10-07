@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Calculadora de Investimentos
 
-## Getting Started
+Uma aplicação web moderna para gerenciamento financeiro pessoal, construída com Next.js, React e TypeScript.
 
-First, run the development server:
+## 🚀 Funcionalidades
 
+### 📊 Dashboard Principal
+- Visão geral das finanças pessoais
+- Cards com estatísticas de investimentos, lucros e gastos
+- Botão para limpar todos os dados armazenados
+
+### 🧮 Calculadoras Financeiras
+- **Calculadora de Investimentos**: Simule rendimentos de investimentos
+- **Juros Compostos**: Calcule o poder dos juros compostos
+- **Empréstimos**: Simule financiamentos e empréstimos
+- **Aposentadoria**: Planeje sua aposentadoria
+- **Empréstimo Pessoal**: Calcule parcelas de empréstimos pessoais
+- **Financiamento Imobiliário**: Simule financiamentos de imóveis
+
+### 💰 Gestão Financeira
+- **Meus Gastos**: Controle e categorize seus gastos
+- **Meus Investimentos**: Gerencie seu portfólio de investimentos
+- **Meus Lucros**: Acompanhe seus ganhos e rendimentos
+
+### 📈 Relatórios e Gráficos
+- Gráficos interativos com Recharts
+- Análise de gastos por categoria
+- Evolução mensal de investimentos e lucros
+- Distribuição de investimentos por tipo
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Next.js 14** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Radix UI** - Componentes acessíveis
+- **Recharts** - Gráficos e visualizações
+- **Lucide React** - Ícones
+
+## 📦 Instalação
+
+1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/seu-usuario/calculadora-investimentos.git
+cd calculadora-investimentos
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Execute o projeto:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Acesse http://localhost:3000
 
-## Learn More
+## 🔧 Scripts Disponíveis
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Gera a build de produção
+- `npm run start` - Inicia o servidor de produção
+- `npm run lint` - Executa o linter
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Estrutura do Projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                    # App Router do Next.js
+├── components/            
+│   ├── auth/              # Componentes de autenticação
+│   ├── calculator/        # Calculadoras financeiras
+│   ├── expenses/          # Gestão de gastos
+│   ├── investments/       # Gestão de investimentos
+│   ├── layout/            # Layout e navegação
+│   ├── profits/           # Gestão de lucros
+│   ├── reports/           # Relatórios e gráficos
+│   └── ui/                # Componentes de UI
+├── contexts/              # Contextos React
+├── lib/                   # Utilitários e helpers
+└── types/                 # Definições de tipos TypeScript
+```
 
-## Deploy on Vercel
+## 🚀 Como subir para o GitHub
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Crie um novo repositório no GitHub (https://github.com/new)
+2. Nomeie como "calculadora-investimentos"
+3. Execute os comandos:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+git remote add origin https://github.com/SEU-USUARIO/calculadora-investimentos.git
+git branch -M main
+git push -u origin main
+```
+
+## 🎯 Próximas Funcionalidades
+
+- [ ] Sistema de notas e tarefas
+- [ ] Exportação de relatórios
+- [ ] Integração com APIs de cotações
+- [ ] Notificações e lembretes
+- [ ] Backup na nuvem
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+
+---
+
+Desenvolvido com ❤️ usando Next.js e TypeScript
